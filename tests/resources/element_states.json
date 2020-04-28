@@ -1,0 +1,12 @@
+[
+  {
+    "name": "start.hovered",
+    "state": {
+      "position": [0, 0],
+      "color": "red",
+      "font": "Arial",
+      "fontsize": "30",
+      "text": "Start.hovered"
+    }
+  }
+]
