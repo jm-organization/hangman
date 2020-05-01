@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-from setuptools import setup, find_packages as packages
+from setuptools import setup
 
 setup(
     name='Hangman',
-    version='0.1.7.dev8',
+    version='0.1.8.b2',
     url='https://github.com/jm-organization/hangman',
     license='GPL-3.0',
     author='gromovjm',

@@ -10,6 +10,7 @@ from hangman.container import App
 from hangman.gamegui import GameGui
 
 from testgame.events import application_build, game_gui_drawn, game_initialization
+from testgame.logic import logic
 
 
 def register_configs(app, configs, *args):
@@ -38,11 +39,6 @@ app.register('component', 'game', Game)
 app.dispatch('application_build', application_build)
 app.dispatch('game_gui_drawn', game_gui_drawn)
 app.dispatch('game_initialization', game_initialization)
-
-
-def logic(*args):
-    pass
-
 
 game_application: Game = app.build('game')
 game_application.start(logic)

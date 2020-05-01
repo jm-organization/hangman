@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # coding=utf-8
+
 from gamegui import GameGui
 from hangman.components.game import Game
-from hangman.components.l10n import __
 
 
 def application_build(app, event):
@@ -17,6 +17,8 @@ def application_build(app, event):
     app.get('component', 'gui').set_dimensions(1300, 850)
     app.get('component', 'gui').set_flags(GameGui.RESIZABLE | GameGui.SCALED)
 
+    app.get('component', 'gui').FRAMES = 30
+
     pass
 
 
@@ -28,7 +30,8 @@ def game_initialization(app, event, game):
     """
 
     game.gui.set_colors(
-        red=(255, 0, 0)
+        red=(255, 0, 0),
+        gray=(144, 144, 144)
     )
 
     game.gui.set_background('white')

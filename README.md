@@ -18,17 +18,17 @@ from hangman.container import App
 from hangman.components.configs import Configs
 from hangman.components.l10n import Translation
 
-from application import Application
+from myapplication import MyApplication
 
 
-def register_configs(app, configs):
+def register_configs(app, configs, *args):
     """ Configs register method.
     """
     
     return configs(app.path('configs/')).read()
 
 
-def register_translator(a, translator):
+def register_translator(a, translator, *args):
     """ Translator register method.
     """
     
@@ -51,14 +51,14 @@ app.VERSION = '0.1.0.dev1'
 # Register some application components
 app.register('config', Configs, registerer=register_configs)
 app.register('translator', Translation, registerer=register_translator)
-app.register('component', 'my_application', Application)
+app.register('component', 'my_application', MyApplication)
 
 # Register some event handlers
 app.dispatch('application_build', application_build)
 
 # Build our app. 
 # As a parameter of the build method, you need to specify the name of the component that will process the logic of your application.
-my_application: Application = app.build('my_application')
+my_application: MyApplication = app.build('my_application')
 # Now you can call the methods of your application to process it, if necessary. 
 my_application.start()
 ```

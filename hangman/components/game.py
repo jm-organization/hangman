@@ -1,7 +1,39 @@
 #!/usr/bin/env python
 # coding=utf-8
-from gamegui import GameGui
+
+import pygame
+from pygame.constants import *
+
 from hangman.container import Component, Event
+from hangman.gamegui import GameGui
+
+
+class DebugInfo:
+
+    position = ()
+    items = {}
+
+    def __init__(self, x=5, y=5):
+        self.position = (x, y)
+
+    def show(self, window):
+        y = 5
+
+        for item in self.items.values():
+            text = item[0] + ': ' + item[1]
+            font = pygame.font.SysFont('Arial', 15)
+
+            window.blit(font.render(text, 1, item[2]), (5, y + 5))
+
+            y += 15
+
+        pass
+
+    def add(self, caption, info, color):
+        self.items[caption] = [caption, info, color]
+        pass
+
+    pass
 
 
 class Game(Component):
@@ -11,6 +43,9 @@ class Game(Component):
     resources = 'resources/assets/'
 
     gui: GameGui = None
+
+    # need_show_debug = False
+    # debug: DebugInfo = None
 
     pressed_keys = {}
     need_redraw_gui = True
@@ -43,6 +78,7 @@ class Game(Component):
     def build(self):
         """ """
         self.gui = self.app.get('component', 'gui')
+        # self.debug = DebugInfo()
 
         # Отрисовываем окно игры.
         self.gui.init()
@@ -65,18 +101,28 @@ class Game(Component):
         while not self.stopped:
             self.gui.component('time').Clock().tick(self.gui.FRAMES)
 
+            self.pressed_keys = self.gui.component('key').get_pressed()
+
+            # if self.pressed_keys[K_LCTRL] and self.pressed_keys[K_d]:
+            #     if self.need_show_debug:
+            #         self.need_show_debug = False
+            #     else:
+            #         self.need_show_debug = True
+
+            if handler:
+                handler(self, *args)
+
             for event in gui_events.get():
                 if event.type not in self.gui.EVENTS:
                     continue
 
                 self.trigger_event(self.gui.EVENTS[event.type], self, event)
 
-            self.pressed_keys = self.gui.component('key').get_pressed()
-
-            if handler:
-                handler(*args)
-
             self.gui.update(self.need_redraw_gui)
+
+            # if self.need_show_debug:
+            #     self.debug.show(self.gui.window)
+            #     self.gui.update(False)
 
         # Завершаем игру при нажатии клавиши выхода из игры (или закрытия окна).
         self.gui.close()
@@ -99,7 +145,9 @@ def on_activeevent(app, event, game, game_event):
     pass
 
 
-def on_keydown(app, event, game, game_event):
+def on_keydown(app, event, game: Game, game_event):
+    # game.debug.add('Pressed key', game_event.unicode, (0, 0, 0))
+
     pass
 
 
@@ -108,28 +156,37 @@ def on_keyup(app, event, game, game_event):
 
 
 def on_mousemotion(app, event, game, game_event):
-    game.need_redraw_gui = True
+    pass
+
+
+def _click(app, game, game_event):
 
     element = game.gui.element(None, *game_event.pos)
     if not element:
         return
 
-    element.on_hover(game, game.gui.window)
+    event_name = 'lclick'
+
+    if game_event.button == BUTTON_RIGHT:
+        event_name = 'rclick'
+    elif game_event.button == BUTTON_MIDDLE:
+        event_name = 'mclick'
+
+    method = 'on'
+
+    if game_event.type == 1026:
+        method = 'off'
+
+    event = element.__getattribute__(method)
+    event(event_name, app, game, game_event)
 
 
 def on_mousebuttonup(app, event, game, game_event):
-    game.need_redraw_gui = True
-
-    element = game.gui.element(None, *game_event.pos)
-    if not element:
-        return
-
-    element.on_click(game, game.gui.window)
-    pass
+    _click(app, game, game_event)
 
 
 def on_mousebuttondown(app, event, game, game_event):
-    pass
+    _click(app, game, game_event)
 
 
 def on_joyaxismotion(app, event, game, game_event):

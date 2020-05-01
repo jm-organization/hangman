@@ -1,12 +1,33 @@
 [
   {
-    "name": "start.hovered",
+    "name": "quit_button.hovered",
     "state": {
-      "position": [0, 0],
-      "color": "red",
-      "font": "Arial",
-      "fontsize": "30",
-      "text": "Start.hovered"
+      "background": "resources/assets/button-hovered.png",
+      "text": "Let's quit!",
+      "bold": true
+    }
+  },
+  {
+    "name": "quit_button.lclick",
+    "state": {
+      "background": "resources/assets/button-hovered.png",
+      "text": "Let's quit!",
+      "bold": true,
+      "position": [850, 85]
+    }
+  },
+  {
+    "name": "quit_confirm_button.hovered",
+    "state": {
+      "background": "resources/assets/button-hovered.png",
+      "bold": true
+    }
+  },
+  {
+    "name": "quit_cancel_button.hovered",
+    "state": {
+      "background": "resources/assets/button-hovered.png",
+      "bold": true
     }
   }
 ]

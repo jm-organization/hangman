@@ -123,8 +123,8 @@ class App:
         if attribute not in dir(App) and registerer is None:
             raise NameError('Unknown registration name <' + t + '>.')
 
-        # Вызываем указанный регистратор с указанными параметрами
-        # и передаём объект приложения для дальнейшей регистрации.
+        # Вызываем указанный регистратор с указанными параметрами и
+        # передаём объект приложения для дальнейшей регистрации.
         if callable(registerer):
             self.__setattr__('_' + t + 's', registerer(self, options[0], *options))
 
@@ -134,6 +134,9 @@ class App:
         registerer = self.__getattribute__(attribute)
         registerer(options)
 
+    def is_triggerable(self, name):
+        return name in self._events
+
     def trigger_event(self, name, *args, **kwargs):
         """ Вызывает обработчики события.
         """
@@ -141,6 +144,14 @@ class App:
             raise SystemError('Unknown <' + name + '> event.')
 
         self._events[name].trigger(self, *args, **kwargs)
+
+    def remove_event(self, name, no_errors=False):
+        """ Удаляет событие.
+        """
+        if name not in self._events and not no_errors:
+            raise SystemError('Unknown <' + name + '> event.')
+
+        del self._events[name]
 
     pass
 
