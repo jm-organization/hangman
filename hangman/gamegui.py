@@ -526,6 +526,34 @@ class Field(Element):
         pass
 
 
+# class Circle(Element):
+#     radius = 0
+#     background = 0
+#
+#     def __init__(self, radius, background=(0, 0, 0), name='', x=0, y=0, *args, **kwargs):
+#         super().__init__(pygame.Surface((radius * 2, radius * 2)), name, x, y, *args, **kwargs)
+#
+#         self.radius = radius
+#         self.background = background
+#
+#         self.draw()
+#
+#     def set_radius(self, radius):
+#         self.radius = radius
+#
+#     def set_background(self, background):
+#         self.background = background
+#
+#     def redraw(self):
+#         pygame.draw.circle(self._surface, self.background, (self.radius, self.radius), self.radius)
+#         self._surface.set_colorkey((0, 0, 0))
+#
+#     draw = redraw
+#
+#     def change_state(self, app: App, event_type, event_name, *options, **state):
+#         pass
+
+
 class Text(Element):
     """ Текстовый элемент игрового интерфейса <app.gamegui.Text(Element)>.
     """
@@ -663,8 +691,52 @@ class Button(Field):
 
 
 class Image(Element):
-    def __init__(self, name, filename):
-        super().__init__(name, pygame.image.load(filename))
+    filename = ''
+
+    def __init__(self, filename, colorkey=(0, 0, 0), width=0, height=None, *args, **kwargs):
+        self.filename = filename
+
+        image = pygame.image.load(filename)
+
+        if width > 0 and (type(height) is not int or height <= 0):
+            w = image.get_rect().width
+            h = image.get_rect().height
+            k = width / w
+            height = int(h * k)
+
+        if height > 0 and (type(width) is not int or width <= 0):
+            h = image.get_rect().height
+            w = image.get_rect().width
+            k = height / h
+            width = int(w * k)
+
+        image = pygame.transform.scale(image, (width, height))
+
+        super().__init__(image, *args, **kwargs)
+
+        self.set_colorkey(colorkey)
+
+    def convert(self):
+        return self._surface.convert()
 
     def convert_alpha(self):
-        self._surface.convert_alpha()
+        return self._surface.convert_alpha()
+
+    def get_colorkey(self):
+        return self._surface.get_colorkey()
+
+    def get_alpha(self):
+        return self._surface.get_alpha()
+
+    def set_colorkey(self, color):
+        self._surface.set_colorkey(color)
+
+        return self
+
+    def set_alpha(self, value, flags=0):
+        self._surface.set_alpha(value, flags)
+
+        return self
+
+    def change_state(self, app: App, event_type, event_name, *options):
+        pass
