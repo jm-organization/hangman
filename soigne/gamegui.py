@@ -252,7 +252,7 @@ class GameGui(Component):
         """
 
         if isinstance(element, pygame.Surface):
-            self.elements[name] = Element(element, name, x, y, area, flags, parent)
+            self.elements[name] = element = Element(element, name, x, y, area, flags, parent)
         elif isinstance(element, Element):
             element.set_name(name)
             element.set_position(x, y)
@@ -509,6 +509,28 @@ class Field(Element):
 
         self.set_background(background)
 
+    def convert(self):
+        return self._surface.convert()
+
+    def convert_alpha(self):
+        return self._surface.convert_alpha()
+
+    def get_colorkey(self):
+        return self._surface.get_colorkey()
+
+    def get_alpha(self):
+        return self._surface.get_alpha()
+
+    def set_colorkey(self, color):
+        self._surface.set_colorkey(color)
+
+        return self
+
+    def set_alpha(self, value, flags=0):
+        self._surface.set_alpha(value, flags)
+
+        return self
+
     def set_background(self, background):
         if type(background) is tuple:
             self._surface.fill(background)
@@ -697,6 +719,7 @@ class Image(Element):
         self.filename = filename
 
         image = pygame.image.load(filename)
+        need_transform = False
 
         if width > 0 and (type(height) is not int or height <= 0):
             w = image.get_rect().width
@@ -704,13 +727,18 @@ class Image(Element):
             k = width / w
             height = int(h * k)
 
-        if height > 0 and (type(width) is not int or width <= 0):
+            need_transform = True
+
+        if type(height) is int and height > 0 and (type(width) is not int or width <= 0):
             h = image.get_rect().height
             w = image.get_rect().width
             k = height / h
             width = int(w * k)
 
-        image = pygame.transform.scale(image, (width, height))
+            need_transform = True
+
+        if need_transform:
+            image = pygame.transform.scale(image, (width, height))
 
         super().__init__(image, *args, **kwargs)
 

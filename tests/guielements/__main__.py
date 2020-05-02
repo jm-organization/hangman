@@ -26,6 +26,7 @@ def logic(game: Game, *args):
     # game.gui.add('circle1', Circle(15, (255, 0, 0)), 25, 25)
     # game.gui.add('circle2', Circle(10, (175, 79, 136)), 65, 25)
 
+    game.gui.add('earth-image0', Image(app.path('resources/mouse.jpg')), 210, 25)
     game.gui.add('earth-image1', Image(app.path('resources/earth.jpg'), width=128), 120, 25)
     game.gui.add('earth-image2', Image(app.path('resources/earth.jpg'), height=80), 210, 25)
 
