@@ -5,11 +5,10 @@ import pygame
 from pygame.constants import *
 
 from soigne.container import Component, Event
-from soigne.gamegui import GameGui
+from soigne.gamegui import GameGui, Layout
 
 
 class DebugInfo:
-
     position = ()
     items = {}
 
@@ -49,6 +48,7 @@ class Game(Component):
 
     pressed_keys = {}
     need_redraw_gui = True
+    need_resize_window = False
     stopped = True
 
     def __init__(self, app):
@@ -118,6 +118,10 @@ class Game(Component):
 
                 self.trigger_event(self.gui.EVENTS[event.type], self, event)
 
+            if self.need_resize_window:
+                self.gui.window = self.gui.component('display').set_mode(self.gui.dimensions, self.gui.flags)
+                self.need_resize_window = False
+
             self.gui.update(self.need_redraw_gui)
 
             # if self.need_show_debug:
@@ -141,7 +145,7 @@ def on_quit(app, event, game, game_event):
     pass
 
 
-def on_activeevent(app, event, game, game_event):
+def on_activeevent(app, event, game: Game, game_event):
     pass
 
 
@@ -160,7 +164,6 @@ def on_mousemotion(app, event, game, game_event):
 
 
 def _click(app, game, game_event):
-
     element = game.gui.element(None, *game_event.pos)
     if not element:
         return
@@ -209,8 +212,14 @@ def on_joybuttondown(app, event, game, game_event):
     pass
 
 
-def on_videoresize(app, event, game, game_event):
-    pass
+def on_videoresize(app, event, game: Game, game_event):
+    layout = game.gui.drawn_layout
+
+    game.gui.set_dimensions(*game_event.size)
+    game.need_resize_window = True
+
+    if isinstance(layout, Layout):
+        layout.resize(*game_event.size)
 
 
 def on_videoexpose(app, event, game, game_event):
@@ -219,4 +228,3 @@ def on_videoexpose(app, event, game, game_event):
 
 def on_userevent(app, event, game, game_event):
     pass
-

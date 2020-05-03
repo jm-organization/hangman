@@ -62,6 +62,8 @@ class GameGui(Component):
     display = 0
 
     window = None
+    active_layout = None
+    drawn_layout = None
     element_states = None
     elements = {}
 
@@ -311,6 +313,14 @@ class GameGui(Component):
 
         pass
 
+    def draw_active_layout(self):
+        layout = self.active_layout
+
+        if layout is not None:
+            layout(self).draw()
+
+        pass
+
     def draw(self, callback=None, *args):
         """ Отрисовывает интерфейс приложения.
 
@@ -331,10 +341,10 @@ class GameGui(Component):
         """
 
         if redraw_gui:
-            if self.icon:
-                self.component('display').set_icon(self.icon)
-            self.component('display').set_caption(self.caption)
-
+            # if self.icon:
+            #     self.component('display').set_icon(self.icon)
+            # self.component('display').set_caption(self.caption)
+            #
             self.window.fill(self.color(self.background))
 
             self.draw_elements()
@@ -361,6 +371,7 @@ class GameGui(Component):
             "time": pygame.time,
             "key": pygame.key,
             "mouse": pygame.mouse,
+            "transform": pygame.transform,
         }
 
 
@@ -368,25 +379,37 @@ class Layout:
     gui: GameGui = None
     app: App = None
 
+    _elements = []
+
     def __init__(self, gui):
         self.gui = gui
         self.app = gui.app
+
+    @abc.abstractmethod
+    def elements(self):
+        return []
+
+    def drawn_elements(self):
+        return self._elements
+
+    @abc.abstractmethod
+    def events(self):
+        pass
+
+    @abc.abstractmethod
+    def resize(self, width, height):
+        pass
 
     def draw(self):
         self.gui.reset_elements()
 
         for element in self.elements():
             self.gui.add(*element)
+            self._elements.append(self.gui.element(element[0]))
 
         self.events()
 
-    @abc.abstractmethod
-    def elements(self):
-        return []
-
-    @abc.abstractmethod
-    def events(self):
-        pass
+        self.gui.drawn_layout = self
 
 
 # class Sprites(pygame.sprite.Group):

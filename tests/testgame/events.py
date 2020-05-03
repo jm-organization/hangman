@@ -15,7 +15,7 @@ def application_build(app, event):
     """
 
     app.get('component', 'gui').set_dimensions(1300, 850)
-    app.get('component', 'gui').set_flags(GameGui.RESIZABLE | GameGui.SCALED)
+    app.get('component', 'gui').set_flags(GameGui.HWSURFACE | GameGui.DOUBLEBUF | GameGui.RESIZABLE)
 
     app.get('component', 'gui').FRAMES = 30
 
