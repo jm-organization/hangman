@@ -482,10 +482,10 @@ class Element:
 class Field(Element):
     """ A rectangle interface element. """
 
-    def __init__(self, width, height, background=(0, 0, 0), name='', x=0, y=0, *args, **kwargs):
+    def __init__(self, width, height, background=(0, 0, 0), alpha=255, name='', x=0, y=0, *args, **kwargs):
         super().__init__(pygame.Surface((width, height)), name, x, y, *args, **kwargs)
 
-        self.set_background(background)
+        self.set_background(background, alpha)
 
     def convert(self):
         return self._surface.convert()
@@ -509,9 +509,10 @@ class Field(Element):
 
         return self
 
-    def set_background(self, background):
+    def set_background(self, background, alpha=255):
         if type(background) is tuple or type(background) is list:
             self._surface.fill(background)
+            self._surface.set_alpha(alpha)
 
             return self
 
@@ -519,6 +520,7 @@ class Field(Element):
 
         self._surface.blit(background, (0, 0))
         self._surface.set_colorkey((0, 0, 0))
+        self._surface.set_alpha(alpha)
 
         return self
 
