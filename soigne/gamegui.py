@@ -510,10 +510,10 @@ class Field(Element):
         return self
 
     def set_background(self, background):
-        if type(background) is tuple:
+        if type(background) is tuple or type(background) is list:
             self._surface.fill(background)
 
-            return
+            return self
 
         background = pygame.transform.scale(pygame.image.load(background), self.get_dimensions())
 
@@ -646,7 +646,7 @@ class Button(Field):
         if 'background' in state:
             background = state['background']
 
-            if len(background) != 3:
+            if type(background) is not list:
                 background = app.path(background)
 
             self.set_background(background)
@@ -676,7 +676,15 @@ class Button(Field):
             underline = state['underline']
 
         if 'position' in state:
-            self.set_position(*state['position'])
+            x, y = state['position']
+
+            if x is None:
+                x = self.position[0]
+
+            if y is None:
+                y = self.position[1]
+
+            self.set_position(x, y)
 
         self.set_text(text, color, textalign, fontsize, font, italic, bold, underline)
         self.need_change_hover_state = False

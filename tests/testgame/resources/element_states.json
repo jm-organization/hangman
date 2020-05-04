@@ -13,7 +13,7 @@
       "background": "resources/assets/button-hovered.png",
       "text": "Let's quit!",
       "bold": true,
-      "position": [850, 85]
+      "position": [null, 85]
     }
   },
   {
