@@ -230,17 +230,18 @@ class GameGui(Component):
         If an object of type app.gamegui.Element was passed, this object is added to the list,
         and the specified parameters after it overwrite the corresponding parameters of the specified object.
         """
+        element_name = Element.parse_name(name)
 
         if isinstance(element, pygame.Surface):
-            self.elements[name] = element = Element(element, name, x, y, area, flags, parent)
+            self.elements[element_name['name']] = element = Element(element, element_name['name'], x, y, area, flags, parent)
         elif isinstance(element, Element):
-            element.set_name(name)
+            element.set_name(element_name['name'])
             element.set_position(x, y)
             element.set_parent(parent)
             element.set_area(area)
             element.set_flags(flags)
 
-            self.elements[name] = element
+            self.elements[element_name['name']] = element
         else:
             raise TypeError('Unknown type of element ' + str(type(element))
                             + ". Element can be type of <class 'pygame.Surface'> or <class 'app.gamegui.Element'>.")
@@ -254,9 +255,19 @@ class GameGui(Component):
             self.app.register('event', 'on_' + event_name, Event('on_' + event_name))
             self.app.register('event', 'off_' + event_name, Event('off_' + event_name))
 
+        element_state_name = element_name['group'] if element_name['group'] else element_name['name']
+
         for state in states:
-            if element.name in state['name']:
-                element.set_state(state['name'].replace(element.name, '').strip('.'), state['state'])
+            state_name = None
+
+            if element_state_name in state['name']:
+                state_name = state['name'].replace(element_state_name, '').strip('.')
+
+            if element_name['name'] in state['name']:
+                state_name = state['name'].replace(element_name['name'], '').strip('.')
+
+            if state_name:
+                element.set_state(state_name, state['state'])
 
     def reset_elements(self):
         # for element in self.elements:
@@ -367,8 +378,10 @@ class Layout:
         self.gui.reset_elements()
 
         for element in self.elements():
+            element_name = Element.parse_name(element[0])
+
             self.gui.add(*element)
-            self._elements.append(self.gui.element(element[0]))
+            self._elements.append(element_name['name'])
 
         self.events()
 
@@ -426,6 +439,18 @@ class Element:
         self.states = {}
 
         self.inited = True
+
+    @staticmethod
+    def parse_name(string):
+        parsed = string.split(':')
+        group = ''
+
+        if len(parsed) < 2:
+            name = parsed[0]
+        else:
+            group, name = parsed
+
+        return {"group": group, "name": name}
 
     def surface(self):
         """ Returns parameter sequence for pygame.Surface blit method. """

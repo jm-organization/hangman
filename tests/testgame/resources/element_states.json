@@ -1,6 +1,6 @@
 [
   {
-    "name": "quit_button.hovered",
+    "name": "button.hovered",
     "state": {
       "background": "resources/assets/button-hovered.png",
       "text": "Let's quit!",
@@ -14,20 +14,6 @@
       "text": "Let's quit!",
       "bold": true,
       "position": [null, 85]
-    }
-  },
-  {
-    "name": "quit_confirm_button.hovered",
-    "state": {
-      "background": "resources/assets/button-hovered.png",
-      "bold": true
-    }
-  },
-  {
-    "name": "quit_cancel_button.hovered",
-    "state": {
-      "background": "resources/assets/button-hovered.png",
-      "bold": true
     }
   }
 ]
