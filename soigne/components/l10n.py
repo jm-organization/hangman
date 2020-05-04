@@ -78,7 +78,7 @@ class Translation:
         """ Добавляет словарь фраз по локали в глобальный спсиок фраз.
         """
         # Читаем файл языка
-        self._parser.read(self.dir + lang)
+        self._parser.read(self.dir + lang, 'utf-8')
 
         # Добавляем язык в переводчик.
         lang = lang.replace('.ini', '')
