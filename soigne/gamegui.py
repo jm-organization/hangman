@@ -566,8 +566,8 @@ class Text(Element):
 
     def __init__(self, text, color=(0, 0, 0), fontsize=15, font='Arial', italic=False, bold=False, underline=False):
         self.text = text
-        self.fontsize = fontsize
         self.color = color
+        self.fontsize = fontsize
         self.fontname = font
         self.italic = italic
         self.bold = bold
@@ -586,15 +586,21 @@ class Text(Element):
 
 
 class Button(Field):
-    text: Text = None
+    text: Text = None,
+    textalign = 'center'
 
     def __init__(self, text, *args, **kwargs):
 
-        color, fontsize, font = (255, 255, 255), 15, 'Arial'
+        color, textalign, fontsize, font, italic, bold, underline \
+            = (255, 255, 255), 'center', 15, 'Arial', False, False, False
 
         if 'color' in kwargs:
             color = kwargs['color']
             kwargs.pop('color')
+
+        if 'textalign' in kwargs:
+            textalign = kwargs['textalign']
+            kwargs.pop('textalign')
 
         if 'fontsize' in kwargs:
             fontsize = kwargs['fontsize']
@@ -604,8 +610,20 @@ class Button(Field):
             font = kwargs['font']
             kwargs.pop('font')
 
+        if 'italic' in kwargs:
+            italic = kwargs['italic']
+            kwargs.pop('italic')
+
+        if 'bold' in kwargs:
+            bold = kwargs['bold']
+            kwargs.pop('bold')
+
+        if 'underline' in kwargs:
+            underline = kwargs['underline']
+            kwargs.pop('underline')
+
         super().__init__(*args, **kwargs)
-        self.set_text(text, color, fontsize, font)
+        self.set_text(text, color, textalign, fontsize, font, italic, bold, underline)
 
     def change_state(self, app: App, event_type, event_name, *options):
         if event_type != 'on':
@@ -618,6 +636,7 @@ class Button(Field):
 
         text = self.text.text
         color = self.text.color
+        textalign = self.textalign
         fontsize = self.text.fontsize
         font = self.text.fontname
         italic = self.text.italic
@@ -638,6 +657,9 @@ class Button(Field):
         if 'color' in state:
             color = state['color']
 
+        if 'textalign' in state:
+            textalign = state['textalign']
+
         if 'fontsize' in state:
             fontsize = state['fontsize']
 
@@ -656,20 +678,34 @@ class Button(Field):
         if 'position' in state:
             self.set_position(*state['position'])
 
-        self.set_text(text, color, fontsize, font, italic, bold, underline)
+        self.set_text(text, color, textalign, fontsize, font, italic, bold, underline)
         self.need_change_hover_state = False
 
-    def set_text(self, text, color=(255, 255, 255), fontsize=15, font='Arial', italic=False, bold=False,
+    def set_text(self, text, color=(255, 255, 255), textalign='center', fontsize=15, font='Arial', italic=False, bold=False,
                  underline=False):
         if type(text) is not Text:
             self.text = Text(text, color, fontsize, font, italic, bold, underline)
         else:
             self.text = text
 
+        self.textalign = textalign
+        textalign = self.textalign.split(':')
+
+        if len(textalign) < 2:
+            textalign, outset = textalign[0], 5
+        else:
+            textalign, outset = textalign[0], int(textalign[1])
+
         text_width, text_height = self.text.get_dimensions()
         width, height = self.get_dimensions()
 
-        self.text.set_position(width / 2 - text_width / 2, height / 2 - text_height / 2)
+        self.text.set_position(outset, height / 2 - text_height / 2)
+
+        if textalign == 'center':
+            self.text.set_position(width / 2 - text_width / 2, height / 2 - text_height / 2)
+
+        if textalign == 'right':
+            self.text.set_position(width - text_width + outset, height / 2 - text_height / 2)
 
         self._surface.blit(*self.text.surface())
 
