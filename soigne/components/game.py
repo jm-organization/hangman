@@ -1,50 +1,16 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-import pygame
-from pygame.constants import *
+from pygame.constants import BUTTON_RIGHT, BUTTON_MIDDLE
 
 from soigne.container import Component, Event
 from soigne.gamegui import GameGui, Layout
 
 
-class DebugInfo:
-    position = ()
-    items = {}
-
-    def __init__(self, x=5, y=5):
-        self.position = (x, y)
-
-    def show(self, window):
-        y = 5
-
-        for item in self.items.values():
-            text = item[0] + ': ' + item[1]
-            font = pygame.font.SysFont('Arial', 15)
-
-            window.blit(font.render(text, 1, item[2]), (5, y + 5))
-
-            y += 15
-
-        pass
-
-    def add(self, caption, info, color):
-        self.items[caption] = [caption, info, color]
-        pass
-
-    pass
-
-
 class Game(Component):
-    """ Главный класс игры.
-    Точка вхождения для взаимодействия пользователя с игрой.
-    """
     resources = 'resources/assets/'
 
     gui: GameGui = None
-
-    # need_show_debug = False
-    # debug: DebugInfo = None
 
     pressed_keys = {}
     need_redraw_gui = True
@@ -78,23 +44,20 @@ class Game(Component):
     def build(self):
         """ """
         self.gui = self.app.get('component', 'gui')
-        # self.debug = DebugInfo()
 
-        # Отрисовываем окно игры.
         self.gui.init()
-
         self.trigger_event('game_initialization', self)
 
-        self.gui.draw(self._handle_drawn_gui)
+        self.gui.draw(lambda *args: self.trigger_event('game_gui_drawn', self, *args))
 
         return self
 
     def start(self, handler=None, *args):
-        """ Метод запуска цикла обработки игровых событий.
-        Обновляет окно игры, запускает обработчики событий.
+        """ A method for starting a game event processing cycle.
 
-        :param handler: Обработчик событий
+        Updates the game window, event handlers.
         """
+
         gui_events = self.gui.component('event')
 
         self.stopped = False
@@ -102,12 +65,6 @@ class Game(Component):
             self.gui.component('time').Clock().tick(self.gui.FRAMES)
 
             self.pressed_keys = self.gui.component('key').get_pressed()
-
-            # if self.pressed_keys[K_LCTRL] and self.pressed_keys[K_d]:
-            #     if self.need_show_debug:
-            #         self.need_show_debug = False
-            #     else:
-            #         self.need_show_debug = True
 
             if handler:
                 handler(self, *args)
@@ -124,20 +81,10 @@ class Game(Component):
 
             self.gui.update(self.need_redraw_gui)
 
-            # if self.need_show_debug:
-            #     self.debug.show(self.gui.window)
-            #     self.gui.update(False)
-
-        # Завершаем игру при нажатии клавиши выхода из игры (или закрытия окна).
         self.gui.close()
 
     def stop(self):
         self.stopped = True
-
-        # self.gui.close()
-
-    def _handle_drawn_gui(self, *args):
-        self.trigger_event('game_gui_drawn', self, *args)
 
 
 def on_quit(app, event, game, game_event):
@@ -150,8 +97,6 @@ def on_activeevent(app, event, game: Game, game_event):
 
 
 def on_keydown(app, event, game: Game, game_event):
-    # game.debug.add('Pressed key', game_event.unicode, (0, 0, 0))
-
     pass
 
 

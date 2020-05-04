@@ -12,10 +12,10 @@ from soigne.container import Component, Event, App
 
 
 class GameGui(Component):
-    """ Игровой интерфейс.
+    """ Game interface.
 
-    Служит для управления интерфесом игры и обрабатывает игровые события.
-    СОдержит в себе набор параметров и методов для добавления элементов интерфеса.
+    Serves to control the game interface and processes game events.
+    It contains a set of parameters and methods for adding interface elements.
     """
 
     COMPONENTS = {}
@@ -72,7 +72,6 @@ class GameGui(Component):
         pygame.init()
         self._register_components()
 
-        # Регистрация событий игрвого интерфейса.
         self.app.register('event', 'quit', Event('quit'))
         self.app.register('event', 'activeevent', Event('activeevent'))
         self.app.register('event', 'keydown', Event('keydown'))
@@ -90,10 +89,10 @@ class GameGui(Component):
         self.app.register('event', 'userevent', Event('userevent'))
 
     def init(self):
-        """ Метод инициализации игрового интерфейса.
+        """ Game interface initialization method.
 
-        Регистрирует состояния элементов.
-        Устанавливает параметры отрисовки игровго интерфейса и окна.
+        Registers the state of elements.
+        Sets the rendering options for the game interface and window.
         """
 
         if self.centred:
@@ -109,7 +108,7 @@ class GameGui(Component):
         return self
 
     def color(self, name):
-        """ Мотод получения цвета из цветовой палитры. """
+        """ Get color method. """
 
         if name not in self.COLORS:
             raise NameError('Unknown colour <' + str(name) + '> name. You can use only: '
@@ -118,7 +117,7 @@ class GameGui(Component):
         return self.COLORS[name]
 
     def component(self, name='self'):
-        """ Мотод получения компонента игрвого интерфеса. """
+        """ Get game interface component method. """
 
         if name == 'self':
             return self
@@ -130,12 +129,12 @@ class GameGui(Component):
         return self.COMPONENTS[name]
 
     def element(self, name=None, x=None, y=None):
-        """ Возвращает элементы интерфеса.
+        """ Returns the elements of an interface.
 
-        При переданом имени, эллемент будет возвращён из списка по имени.
+        With the given name, the element will be returned from the list by name.
 
-        В случае указания координат позиции, в списке будет найден эллемент,
-        который пересекает указанную позицию.
+        If you specify the position coordinates, an element will be found in the list,
+        which crosses the specified position.
         """
 
         element = None
@@ -160,7 +159,10 @@ class GameGui(Component):
         return self.flags & flag != 0
 
     def set_colors(self, **colors):
-        """ Добавляет переданные цвета к цветовой палитре. """
+        """ Add colors method.
+
+        You should provide key-value pair of color name and rgb color value.
+        """
 
         for name, color in colors.items():
             if type(color) is not tuple:
@@ -168,92 +170,65 @@ class GameGui(Component):
 
             self.COLORS[name] = color
 
-        pass
-
     def set_dimensions(self, width=800, height=450):
-        """ Устаналвивает размеры окна приложения.
+        """ Sets the size of the application window.
 
-        Небходимо вызывать перед инициализацией интерфеса.
+        Must be called before initializing the interface.
         """
 
         self.dimensions = (width, height)
 
-        pass
-
     def set_centered(self, centered=True):
-        """ Устаналвивает правило, что окно приложенияи необходимо отрисовывть в центре экрана.
+        """ Sets the rule that the application window must be outlined in the center of the screen.
 
-        Небходимо вызывать перед инициализацией интерфеса.
+        Must be called before initializing the interface.
         """
 
         self.centred = centered
 
-        pass
-
     def set_flags(self, flags: int):
-        """ Устаналвивает флаги отрисовки интерфейса.
-        """
-
         self.flags = flags
 
-        pass
-
     def set_depth(self, depth: int):
-        """ Устаналвивает количество бит для цвета.
+        """ Sets the number of bits for a color.
 
-        Обычно лучше не передавать аргумент глубины. По умолчанию будет установлена
-        наилучшая и самая быстрая глубина цвета для системы.
+        It is usually best not to pass a depth argument. The default will be set
+        The best and fastest color depth for the system.
         """
 
         self.depth = depth
 
-        pass
-
     def set_display(self, display: int):
-        """ Устаналвивает флаги отрисовки интерфейса.
-        """
-
         self.display = display
 
-        pass
-
     def set_icon(self, path, size=(32, 32)):
-        """ Устаналвивает иконку окна приложения. """
-
-        if not path:
-            return False
-
         self.icon = self.component('image').load(path).convert_alpha()  # Создаём (загружаем) иконку
 
         self.icon.set_colorkey(self.color('black'))
         self.icon.blit(self.icon, size)
 
-        return self.component('display').set_icon(self.icon)
+        self.component('display').set_icon(self.icon)
 
     def set_caption(self, caption):
-        """ Устаналвивает заголовок окна приложения. """
-
         self.caption = caption if caption else self.app.NAME
 
-        return self.component('display').set_caption(self.caption)
+        self.component('display').set_caption(self.caption)
 
     def set_background(self, color):
-        """ Устаналвивает фон окна приложения. """
-
-        if not color:
-            return False
-
         self.background = color
 
-        return self.window.fill(self.color(self.background))
+        self.window.fill(self.color(self.background))
+
+    def set_layout(self, layout):
+        self.active_layout = layout
 
     def add(self, name, element, x=0, y=0, parent=None, area=None, flags=0):
-        """ Добавляет элемент интерфеса.
+        """ Adds an interface element.
 
-        В качестве элемента принимает объект типа pygame.Surface.
+        Accepts an object of type pygame.Surface as an element.
 
-        Если был передан объект типа app.gamegui.Element в список добавляется данный объект,
-        а указанные параметры после него перезаписывают соответствующие параметры указанного объекта.
+        If an object of type app.gamegui.Element was passed, this object is added to the list,
+        and the specified parameters after it overwrite the corresponding parameters of the specified object.
         """
 
         if isinstance(element, pygame.Surface):
@@ -268,7 +243,7 @@ class GameGui(Component):
             self.elements[name] = element
         else:
             raise TypeError('Unknown type of element ' + str(type(element))
-                            + ". Тип элемента может быть <class 'pygame.Surface'> или <class 'app.gamegui.Element'>")
+                            + ". Element can be type of <class 'pygame.Surface'> or <class 'app.gamegui.Element'>.")
 
         with open(self.app.path('resources/element_states.json'), "r") as element_states:
             states = json.load(element_states)
@@ -283,25 +258,17 @@ class GameGui(Component):
             if element.name in state['name']:
                 element.set_state(state['name'].replace(element.name, '').strip('.'), state['state'])
 
-        pass
-
     def reset_elements(self):
-        """ Очищает список элементов игрового интерфейса. """
-
         # for element in self.elements:
         #     for event in Element.EVENTS:
         #         self.app.remove_event('on_' + element + '_' + event, no_errors=True)
         #         self.app.remove_event('off_' + element + '_' + event, no_errors=True)
         #
         #     del self.elements[element]
+
         self.elements = {}
 
-        pass
-
     def draw_elements(self):
-        """ Отрисовывает текущие зарегистрированые элементы интерфейса.
-        """
-
         for element in self.elements.values():
             surface = self.window
 
@@ -314,20 +281,16 @@ class GameGui(Component):
 
             surface.blit(*element.surface())
 
-        pass
-
     def draw_active_layout(self):
         layout = self.active_layout
 
         if layout is not None:
             layout(self).draw()
 
-        pass
-
     def draw(self, callback=None, *args):
-        """ Отрисовывает интерфейс приложения.
+        """ Draws the application interface.
 
-        Вызывает переданный обработчик после отрисовки.
+        Invokes the passed handler after rendering.
         """
 
         self.update()
@@ -335,12 +298,10 @@ class GameGui(Component):
         if callable(callback):
             callback(*args)
 
-        pass
-
     def update(self, redraw_gui=True):
-        """ Обновляет игрвой интерфейс.
+        """ Updates the game interface.
 
-        При указанном ложном значении параметра redraw_gui элементы интерфейса перересованны не будут.
+        With the specified false value of the redraw_gui parameter, the interface elements will not be redrawn.
         """
 
         if redraw_gui:
@@ -352,31 +313,32 @@ class GameGui(Component):
         else:
             self.component('display').update()
 
-        pass
-
     def close(self):
-        """ Завершение обработки игрвых событий и очистка игрвого интерфейса. """
-
         self.reset_elements()
-
-        return self.component('display').quit()
+        self.component('display').quit()
 
     def _register_components(self):
-        """ Регистрирует используемые компоненты для быстрого доступа. """
-
         self.COMPONENTS = {
             "display": pygame.display,
-            "image": pygame.image,
             "drawer": pygame.draw,
             "event": pygame.event,
-            "time": pygame.time,
+            "image": pygame.image,
             "key": pygame.key,
             "mouse": pygame.mouse,
+            "time": pygame.time,
             "transform": pygame.transform,
         }
 
 
 class Layout:
+    """ Gui interface layout.
+
+    You can use this abstract layout to create your own interface layouts for showing it when you need.
+    Layout should implement three methods. The First method it's elements,
+    that returns list of parameters sequence for GameGui add method. Second method should contain
+    dispatch event callings. And the last method it's resize method that will be called when window are resized.
+    """
+
     gui: GameGui = None
     app: App = None
 
@@ -426,8 +388,8 @@ class Layout:
 
 
 class Element:
-    """ Элемент интерфейса.
-    """
+    """ An interface element. """
+
     LEFT_CLICK_EVENT = 'lclick'
     MIDDLE_CLICK_EVENT = 'mclick'
     RIGHT_CLICK_EVENT = 'rclick'
@@ -466,7 +428,8 @@ class Element:
         self.inited = True
 
     def surface(self):
-        return [self._surface, self.position, self.area, self.flags]
+        """ Returns parameter sequence for pygame.Surface blit method. """
+        return self._surface, self.position, self.area, self.flags
 
     def get_rect(self):
         return self._surface.get_rect()
@@ -476,28 +439,21 @@ class Element:
 
     def set_name(self, name):
         self.name = name
-        pass
 
     def set_position(self, x, y):
         self.position = (x, y)
-        pass
 
     def set_area(self, area):
         self.area = area
-        pass
 
     def set_flags(self, flags):
         self.flags = flags
-        pass
 
     def set_parent(self, parent):
         self.parent = parent
-        pass
 
     def set_state(self, name, state):
         self.states[name] = state
-
-        pass
 
     @abc.abstractmethod
     def change_state(self, app: App, event_type, event_name, *options):
@@ -510,9 +466,6 @@ class Element:
         self._trigger('off', event_name, app, *options)
 
     def _trigger(self, name, event_name, app: App, *options):
-        """ Изменяет состояние элемента, а также вызывает обработчики соотвествующего события.
-        """
-
         self.change_state(app, name, event_name, *options)
 
         event_name = name + '_' + self.name + '_' + event_name
@@ -527,6 +480,7 @@ class Element:
 
 
 class Field(Element):
+    """ A rectangle interface element. """
 
     def __init__(self, width, height, background=(0, 0, 0), name='', x=0, y=0, *args, **kwargs):
         super().__init__(pygame.Surface((width, height)), name, x, y, *args, **kwargs)
@@ -566,7 +520,7 @@ class Field(Element):
         self._surface.blit(background, (0, 0))
         self._surface.set_colorkey((0, 0, 0))
 
-        pass
+        return self
 
     def change_state(self, app: App, event_type, event_name, *options, **state):
         pass
@@ -601,9 +555,6 @@ class Field(Element):
 
 
 class Text(Element):
-    """ Текстовый элемент игрового интерфейса <app.gamegui.Text(Element)>.
-    """
-
     text = ''
     color = (0, 0, 0)
     fontsize = 15
@@ -635,19 +586,6 @@ class Text(Element):
 
 
 class Button(Field):
-    """ Кнопка игрового интерфейса <app.gamegui.Button(Element)>
-
-    Для инициализации кнопки первым параметром необходимо передать обработчик нажатия кнопки.
-    Помимо него указать следующие параметры
-        *text* - отображаемый текст на кнопке
-        *width* - ширина кнопки
-        *height* - высота кнопки
-        *color* - цвет текста
-        *background* - цвет кнопки
-        *font* - шрифт текста
-        *fontsize* - размер текста
-    """
-
     text: Text = None
 
     def __init__(self, text, *args, **kwargs):
