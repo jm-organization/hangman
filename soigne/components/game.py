@@ -14,6 +14,7 @@ class Game(Component):
 
     pressed_keys = {}
     need_redraw_gui = True
+    need_redraw_after_draw_gui = True
     need_resize_window = False
     stopped = True
 
@@ -80,6 +81,7 @@ class Game(Component):
                 self.need_resize_window = False
 
             self.gui.update(self.need_redraw_gui)
+            self.need_redraw_gui = self.need_redraw_after_draw_gui
 
         self.gui.close()
 
@@ -129,12 +131,14 @@ def _click(app, game, game_event):
     event(event_name, app, game, game_event)
 
 
-def on_mousebuttonup(app, event, game, game_event):
+def on_mousebuttonup(app, event, game: Game, game_event):
     _click(app, game, game_event)
+    game.need_redraw_after_draw_gui = True
 
 
 def on_mousebuttondown(app, event, game, game_event):
     _click(app, game, game_event)
+    game.need_redraw_after_draw_gui = False
 
 
 def on_joyaxismotion(app, event, game, game_event):
