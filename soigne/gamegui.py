@@ -156,6 +156,9 @@ class GameGui(Component):
     def check_position(position, dimensions, x, y):
         return position[0] < x < position[0] + dimensions.width and position[1] < y < position[1] + dimensions.height
 
+    def has_flag(self, flag):
+        return self.flags & flag != 0
+
     def set_colors(self, **colors):
         """ Добавляет переданные цвета к цветовой палитре. """
 
@@ -341,15 +344,13 @@ class GameGui(Component):
         """
 
         if redraw_gui:
-            # if self.icon:
-            #     self.component('display').set_icon(self.icon)
-            # self.component('display').set_caption(self.caption)
-            #
             self.window.fill(self.color(self.background))
-
             self.draw_elements()
 
-        self.component('display').update()
+        if self.has_flag(self.OPENGL) or self.has_flag(self.DOUBLEBUF):
+            self.component('display').flip()
+        else:
+            self.component('display').update()
 
         pass
 
@@ -737,35 +738,52 @@ class Button(Field):
 
 class Image(Element):
     filename = ''
+    image = None
 
     def __init__(self, filename, colorkey=(0, 0, 0), width=0, height=None, *args, **kwargs):
         self.filename = filename
 
-        image = pygame.image.load(filename)
-        need_transform = False
+        self.image = pygame.image.load(filename)
+        self.scale(width, height)
+
+        super().__init__(self.image, *args, **kwargs)
+
+        self.set_colorkey(colorkey)
+
+    def scale(self, width=0, height=None):
+        need_transform = width > 0 and (type(height) is int and height > 0)
 
         if width > 0 and (type(height) is not int or height <= 0):
-            w = image.get_rect().width
-            h = image.get_rect().height
+            w = self.image.get_rect().width
+            h = self.image.get_rect().height
             k = width / w
             height = int(h * k)
 
             need_transform = True
 
-        if type(height) is int and height > 0 and (type(width) is not int or width <= 0):
-            h = image.get_rect().height
-            w = image.get_rect().width
+        if width == 0 and (type(height) is int and height > 0):
+            h = self.image.get_rect().height
+            w = self.image.get_rect().width
             k = height / h
             width = int(w * k)
 
             need_transform = True
 
         if need_transform:
-            image = pygame.transform.scale(image, (width, height))
+            self.image = pygame.transform.scale(self.image, (width, height))
 
-        super().__init__(image, *args, **kwargs)
+    def fill(self, width, height):
+        if height > self.image.get_rect().height:
+            self.scale(height=height)
 
-        self.set_colorkey(colorkey)
+        if width > self.image.get_rect().width:
+            self.scale(width)
+
+        dimensions = self.image.get_rect()
+        x = (width - dimensions.width) / 2
+        y = (height - dimensions.height) / 2
+
+        return self.image, x, y
 
     def convert(self):
         return self._surface.convert()

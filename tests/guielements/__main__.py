@@ -20,15 +20,17 @@ app.register('component', 'gui', GameGui)
 app.register('component', 'game', Game)
 
 
-def logic(game: Game, *args):
-    game.gui.set_background('white')
+app.dispatch('application_build', lambda *args: args[0].get('component', 'gui').set_flags(GameGui.RESIZABLE))
 
-    # game.gui.add('circle1', Circle(15, (255, 0, 0)), 25, 25)
-    # game.gui.add('circle2', Circle(10, (175, 79, 136)), 65, 25)
+
+def logic(game: Game, *args):
+    game.gui.add('background', *Image(app.path('resources/perlin-noise.jpg'))
+                 .fill(game.gui.window.get_width(), game.gui.window.get_height()))
 
     game.gui.add('mouse', Image(app.path('resources/mouse.jpg')), 210, 25)
     game.gui.add('earth-image1', Image(app.path('resources/earth.jpg'), width=128), 120, 25)
     game.gui.add('earth-image2', Image(app.path('resources/earth.jpg'), height=80), 210, 25)
+    game.gui.add('earth-image3', Image(app.path('resources/earth.jpg'), width=150, height=80), 410, 25)
 
     pass
 

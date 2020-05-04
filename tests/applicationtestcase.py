@@ -31,6 +31,31 @@ class AppTestCase(unittest.TestCase):
 
         self.assertIsInstance(application.build('game'), Game)
 
+    def test_app_has_flags(self):
+        self.register_game_components()
+        application.get('component', 'gui').set_flags(GameGui.OPENGL | GameGui.DOUBLEBUF | GameGui.RESIZABLE)
+
+        self.test_app_has_flag1()
+        self.test_app_has_flag2()
+        self.test_app_has_flag3()
+        self.test_app_has_flag4()
+        self.test_app_has_flag5()
+
+    def test_app_has_flag1(self):
+        self.assertTrue(application.get('component', 'gui').has_flag(GameGui.OPENGL))
+
+    def test_app_has_flag2(self):
+        self.assertFalse(application.get('component', 'gui').has_flag(GameGui.HWSURFACE))
+
+    def test_app_has_flag3(self):
+        self.assertTrue(application.get('component', 'gui').has_flag(GameGui.RESIZABLE))
+
+    def test_app_has_flag4(self):
+        self.assertTrue(application.get('component', 'gui').has_flag(GameGui.DOUBLEBUF))
+
+    def test_app_has_flag5(self):
+        self.assertFalse(application.get('component', 'gui').has_flag(GameGui.FULLSCREEN))
+
 
 if __name__ == '__main__':
     unittest.main()
