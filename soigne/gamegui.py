@@ -107,14 +107,19 @@ class GameGui(Component):
 
         return self
 
-    def color(self, name):
+    def color(self, name, alpha=None):
         """ Get color method. """
 
         if name not in self.COLORS:
             raise NameError('Unknown colour <' + str(name) + '> name. You can use only: '
                             + str.join(', ', self.COLORS.keys()) + '.')
 
-        return self.COLORS[name]
+        color = self.COLORS[name]
+
+        if alpha is not None:
+            return color[0], color[1], color[2], alpha
+
+        return color
 
     def component(self, name='self'):
         """ Get game interface component method. """
