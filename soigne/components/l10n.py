@@ -26,24 +26,20 @@ class Language:
         self.name = self._data['language']['name']
 
         self._load_phrases()
-        pass
-
-    def _load_phrases(self):
-        """ Сохраняет фразу в списке фраз языка.
-        """
-        for phrase in self._data.items('phrases'):
-            self.phrases[phrase[0]] = phrase[1]
-
-        pass
 
     def get_phrases(self):
         return self.phrases
 
+    def _load_phrases(self):
+        for phrase in self._data.items('phrases'):
+            self.phrases[phrase[0]] = phrase[1]
+
 
 class Translation:
-    """ Переводчик.
-    Хранит список языков, список фраз выбранного языка,
-    переводит необходимые фразы.
+    """ Translator class.
+
+    Saves languages list, and phrases list of chosen language and
+    translate needed phrases.
     """
 
     dir = ''
@@ -58,8 +54,17 @@ class Translation:
         self.dir = lang_dir
 
         self.load_languages()
-        self.select_language(lang)
-        pass
+        self.set_language(lang)
+
+    def load_languages(self):
+        for lang in scan_languages_dir(self.dir):
+            self._load_language(lang)
+
+    def set_language(self, lang):
+        if lang not in self.languages:
+            raise RuntimeError('Unknown language <' + lang + '>.')
+
+        self.language = self.languages[lang]
 
     @staticmethod
     def translate(phrase, args):
@@ -68,29 +73,9 @@ class Translation:
 
         return Translation.language.phrases.get(phrase)
 
-    def load_languages(self):
-        for lang in scan_languages_dir(self.dir):
-            self.load_language(lang)
-
-        pass
-
-    def load_language(self, lang):
-        """ Добавляет словарь фраз по локали в глобальный спсиок фраз.
-        """
-        # Читаем файл языка
+    def _load_language(self, lang):
         self._parser.read(self.dir + lang, 'utf-8')
 
         # Добавляем язык в переводчик.
         lang = lang.replace('.ini', '')
         self.languages[lang] = Language(lang, self._parser)
-
-        pass
-
-    def select_language(self, lang):
-        """ Выбираем указанный язык.
-        """
-        if lang not in self.languages:
-            raise RuntimeError('Unknown language <' + lang + '>.')
-
-        self.language = self.languages[lang]
-        pass

@@ -4,7 +4,7 @@
 from pygame.constants import BUTTON_RIGHT, BUTTON_MIDDLE
 
 from soigne.container import Component, Event
-from soigne.gamegui import GameGui, Layout
+from soigne.gamegui import GameGui
 
 
 class Game(Component):
@@ -25,20 +25,9 @@ class Game(Component):
         self.app.register('event', 'game_gui_drawn', Event('game_gui_drawn'))
 
         self.app.dispatch('quit', on_quit)
-        self.app.dispatch('activeevent', on_activeevent)
-        self.app.dispatch('keydown', on_keydown)
-        self.app.dispatch('keyup', on_keyup)
-        self.app.dispatch('mousemotion', on_mousemotion)
         self.app.dispatch('mousebuttonup', on_mousebuttonup)
         self.app.dispatch('mousebuttondown', on_mousebuttondown)
-        self.app.dispatch('joyaxismotion', on_joyaxismotion)
-        self.app.dispatch('joyballmotion', on_joyballmotion)
-        self.app.dispatch('joyhatmotion', on_joyhatmotion)
-        self.app.dispatch('joybuttonup', on_joybuttonup)
-        self.app.dispatch('joybuttondown', on_joybuttondown)
         self.app.dispatch('videoresize', on_videoresize)
-        self.app.dispatch('videoexpose', on_videoexpose)
-        self.app.dispatch('userevent', on_userevent)
 
         self.resources = self.app.path(self.resources)
 
@@ -88,23 +77,6 @@ class Game(Component):
 
 def on_quit(app, event, game, game_event):
     game.stopped = True
-    pass
-
-
-def on_activeevent(app, event, game: Game, game_event):
-    pass
-
-
-def on_keydown(app, event, game: Game, game_event):
-    pass
-
-
-def on_keyup(app, event, game, game_event):
-    pass
-
-
-def on_mousemotion(app, event, game, game_event):
-    pass
 
 
 def _click(app, game, game_event):
@@ -138,34 +110,6 @@ def on_mousebuttondown(app, event, game, game_event):
     game.need_redraw_after_draw_gui = False
 
 
-def on_joyaxismotion(app, event, game, game_event):
-    pass
-
-
-def on_joyballmotion(app, event, game, game_event):
-    pass
-
-
-def on_joyhatmotion(app, event, game, game_event):
-    pass
-
-
-def on_joybuttonup(app, event, game, game_event):
-    pass
-
-
-def on_joybuttondown(app, event, game, game_event):
-    pass
-
-
 def on_videoresize(app, event, game: Game, game_event):
     game.gui.set_dimensions(*game_event.size)
     game.need_resize_window = True
-
-
-def on_videoexpose(app, event, game, game_event):
-    pass
-
-
-def on_userevent(app, event, game, game_event):
-    pass

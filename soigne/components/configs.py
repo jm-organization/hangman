@@ -22,12 +22,8 @@ class Configs:
             for option in self._parser.items(section):
                 self.__getattribute__(section)[option[0]] = option[1]
 
-        pass
-
     def read(self):
         for config in listdir(self.path):
             self._load_config(config)
 
         return self
-
-    pass
