@@ -309,7 +309,7 @@ class GameGui(Component):
         if callable(callback):
             callback(*args)
 
-    def update(self, redraw_gui=True):
+    def update(self, redraw_gui=True, resize_gui=False):
         """ Updates the game interface.
 
         With the specified false value of the redraw_gui parameter, the interface elements will not be redrawn.
@@ -318,6 +318,12 @@ class GameGui(Component):
         if redraw_gui:
             self.window.fill(self.color(self.background))
             self.draw_elements()
+
+        if resize_gui:
+            self.window = self.component('display').set_mode(self.dimensions, self.flags)
+
+            if isinstance(self.drawn_layout, Layout):
+                self.drawn_layout.resize(*self.dimensions)
 
         if self.has_flag(self.OPENGL) or self.has_flag(self.DOUBLEBUF):
             self.component('display').flip()
@@ -353,26 +359,18 @@ class Layout:
     gui: GameGui = None
     app: App = None
 
+    x, y, width, height = 0, 0, 800, 450
+
     _elements = []
 
     def __init__(self, gui):
         self.gui = gui
         self.app = gui.app
 
-    @abc.abstractmethod
-    def elements(self):
-        return []
+        self.x, self.y, self.width, self.height = self.gui.window.get_rect()
 
     def drawn_elements(self):
         return self._elements
-
-    @abc.abstractmethod
-    def events(self):
-        pass
-
-    @abc.abstractmethod
-    def resize(self, width, height):
-        pass
 
     def draw(self):
         self.gui.reset_elements()
@@ -386,6 +384,16 @@ class Layout:
         self.events()
 
         self.gui.drawn_layout = self
+
+    @abc.abstractmethod
+    def elements(self):
+        return []
+
+    def events(self):
+        pass
+
+    def resize(self, width, height):
+        self.width, self.height = self.gui.dimensions
 
 
 # class Sprites(pygame.sprite.Group):

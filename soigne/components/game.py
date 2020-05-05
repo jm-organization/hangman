@@ -76,12 +76,9 @@ class Game(Component):
 
                 self.trigger_event(self.gui.EVENTS[event.type], self, event)
 
-            if self.need_resize_window:
-                self.gui.window = self.gui.component('display').set_mode(self.gui.dimensions, self.gui.flags)
-                self.need_resize_window = False
-
-            self.gui.update(self.need_redraw_gui)
+            self.gui.update(self.need_redraw_gui, self.need_resize_window)
             self.need_redraw_gui = self.need_redraw_after_draw_gui
+            self.need_resize_window = False
 
         self.gui.close()
 
@@ -162,13 +159,8 @@ def on_joybuttondown(app, event, game, game_event):
 
 
 def on_videoresize(app, event, game: Game, game_event):
-    layout = game.gui.drawn_layout
-
     game.gui.set_dimensions(*game_event.size)
     game.need_resize_window = True
-
-    if isinstance(layout, Layout):
-        layout.resize(*game_event.size)
 
 
 def on_videoexpose(app, event, game, game_event):
