@@ -133,3 +133,5 @@ dmypy.json
 *.iml
 *.ipr
 *.iws
+!/.idea/
+.idea/
