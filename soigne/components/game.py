@@ -42,7 +42,7 @@ class Game(Component):
 
         return self
 
-    def start(self, handler=None, *args):
+    def start(self, handler: callable = None, *args):
         """ A method for starting a game event processing cycle.
 
         Updates the game window, event handlers.

@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
     name='soigne',
-    version='0.1.8.b2',
+    version='0.1.8.b3',
     url='https://github.com/jm-organization/soigne',
     license='GPL-3.0',
     author='gromovjm',

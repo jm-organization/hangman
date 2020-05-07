@@ -14,8 +14,8 @@ from soigne.container import Component, Event, App
 class GameGui(Component):
     """ Game interface.
 
-    Serves to control the game interface and processes game events.
-    It contains a set of parameters and methods for adding interface elements.
+    Serves to control the game interface and processes game events.
+    It contains a set of parameters and methods for adding interface elements.
     """
 
     COMPONENTS = {}
@@ -91,8 +91,8 @@ class GameGui(Component):
     def init(self):
         """ Game interface initialization method.
 
-        Registers the state of elements.
-        Sets the rendering options for the game interface and window.
+        Registers the state of elements.
+        Sets the rendering options for the game interface and window.
         """
 
         if self.centred:
@@ -136,10 +136,10 @@ class GameGui(Component):
     def element(self, name=None, x=None, y=None):
         """ Returns the elements of an interface.
 
-        With the given name, the element will be returned from the list by name.
+        With the given name, the element will be returned from the list by name.
 
-        If you specify the position coordinates, an element will be found in the list,
-        which crosses the specified position.
+        If you specify the position coordinates, an element will be found in the list,
+        which crosses the specified position.
         """
 
         element = None
@@ -178,7 +178,7 @@ class GameGui(Component):
     def set_dimensions(self, width=800, height=450):
         """ Sets the size of the application window.
 
-        Must be called before initializing the interface.
+        Must be called before initializing the interface.
         """
 
         self.dimensions = (width, height)
@@ -186,7 +186,7 @@ class GameGui(Component):
     def set_centered(self, centered=True):
         """ Sets the rule that the application window must be outlined in the center of the screen.
 
-        Must be called before initializing the interface.
+        Must be called before initializing the interface.
         """
 
         self.centred = centered
@@ -197,8 +197,8 @@ class GameGui(Component):
     def set_depth(self, depth: int):
         """ Sets the number of bits for a color.
 
-        It is usually best not to pass a depth argument. The default will be set
-        The best and fastest color depth for the system.
+        It is usually best not to pass a depth argument. The default will be set
+        The best and fastest color depth for the system.
         """
 
         self.depth = depth
@@ -230,15 +230,16 @@ class GameGui(Component):
     def add(self, name, element, x=0, y=0, parent=None, area=None, flags=0):
         """ Adds an interface element.
 
-        Accepts an object of type pygame.Surface as an element.
+        Accepts an object of type pygame.Surface as an element.
 
-        If an object of type app.gamegui.Element was passed, this object is added to the list,
-        and the specified parameters after it overwrite the corresponding parameters of the specified object.
+        If an object of type app.gamegui.Element was passed, this object is added to the list,
+        and the specified parameters after it overwrite the corresponding parameters of the specified object.
         """
         element_name = Element.parse_name(name)
 
         if isinstance(element, pygame.Surface):
-            self.elements[element_name['name']] = element = Element(element, element_name['name'], x, y, area, flags, parent)
+            self.elements[element_name['name']] = element =\
+                Element(element, element_name['name'], x, y, area, flags, parent)
         elif isinstance(element, Element):
             element.set_name(element_name['name'])
             element.set_position(x, y)
@@ -251,28 +252,14 @@ class GameGui(Component):
             raise TypeError('Unknown type of element ' + str(type(element))
                             + ". Element can be type of <class 'pygame.Surface'> or <class 'app.gamegui.Element'>.")
 
-        with open(self.app.path('resources/element_states.json'), "r") as element_states:
-            states = json.load(element_states)
-
+        # Register element events
         for event in Element.EVENTS:
             event_name = element.name + '_' + event
 
             self.app.register('event', 'on_' + event_name, Event('on_' + event_name))
             self.app.register('event', 'off_' + event_name, Event('off_' + event_name))
 
-        element_state_name = element_name['group'] if element_name['group'] else element_name['name']
-
-        for state in states:
-            state_name = None
-
-            if element_state_name in state['name']:
-                state_name = state['name'].replace(element_state_name, '').strip('.')
-
-            if element_name['name'] in state['name']:
-                state_name = state['name'].replace(element_name['name'], '').strip('.')
-
-            if state_name:
-                element.set_state(state_name, state['state'])
+        self._set_element_states(element_name, element)
 
     def reset_elements(self):
         # for element in self.elements:
@@ -306,7 +293,7 @@ class GameGui(Component):
     def draw(self, callback=None, *args):
         """ Draws the application interface.
 
-        Invokes the passed handler after rendering.
+        Invokes the passed handler after rendering.
         """
 
         self.update()
@@ -317,7 +304,8 @@ class GameGui(Component):
     def update(self, redraw_gui=True, resize_gui=False):
         """ Updates the game interface.
 
-        With the specified false value of the redraw_gui parameter, the interface elements will not be redrawn.
+        With the specified false value of the redraw_gui parameter, the interface elements will not be redrawn.
+        With the specified false value of the resize_gui parameter, the interface will not be resized.
         """
 
         if redraw_gui:
@@ -338,6 +326,28 @@ class GameGui(Component):
     def close(self):
         self.reset_elements()
         self.component('display').quit()
+
+    def _set_element_states(self, element_name, element):
+        path = 'resources/element_states.json'
+
+        if not self.app.exists(path):
+            return
+
+        element_state_name = element_name['group'] if element_name['group'] else element_name['name']
+        with open(self.app.path(path), "r") as element_states:
+            states = json.load(element_states)
+
+        for state in states:
+            state_name = None
+
+            if element_state_name in state['name']:
+                state_name = state['name'].replace(element_state_name, '').strip('.')
+
+            if element_name['name'] in state['name']:
+                state_name = state['name'].replace(element_name['name'], '').strip('.')
+
+            if state_name:
+                element.set_state(state_name, state['state'])
 
     def _register_components(self):
         self.COMPONENTS = {

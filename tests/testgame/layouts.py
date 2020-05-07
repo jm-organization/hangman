@@ -2,7 +2,6 @@
 # coding=utf-8
 
 from soigne.gamegui import Layout, Field, Text, Button
-from testgame.game import Game
 
 
 class QuitLayout(Layout):
