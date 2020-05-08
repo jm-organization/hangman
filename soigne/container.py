@@ -25,7 +25,7 @@ class App:
     URL = ''
     VERSION = 'v0.1.0'
 
-    _unknown_event_error = 'Unknown <%d> event.'
+    _unknown_event_error = 'Unknown <%s> event.'
 
     _path = './'
 
@@ -76,6 +76,9 @@ class App:
         Notice, that this method has functionality for shoving your application's errors.
         """
 
+        if '--debug' in args:
+            return self.debug(component_name, *args)
+
         try:
             self.build(component_name)
 
@@ -89,6 +92,20 @@ class App:
             tkinter.messagebox.showerror(info[0].__name__, info[1])
 
         sys.exit()
+
+    def debug(self, component_name: str, *args):
+        """ Start application method for debug mode.
+
+        Firstly, you should provide your primary component name that
+        has build method for start your app.
+        Next arguments will be provided to start method of your primary component if it is.
+        """
+
+        self.build(component_name)
+
+        if 'start' in dir(self._component):
+            start = self._component.__getattribute__('start')
+            start(*args)
 
     def build(self, component_name: str):
         """ Build application method.

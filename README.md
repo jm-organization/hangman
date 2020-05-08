@@ -9,10 +9,11 @@ pip install soigne
 ```
 
 ### Your first hangman app
-After installing the framework, you need to create the file `` __main __.py`` in the folder of your project and place
+After installing the framework, you need to create the file ``__main __.py`` in the folder of your project and place
 the code from the example below in it.
 ```python
-from os.path import dirname
+import sys
+import os
 
 from soigne.container import App
 from soigne.components.configs import Configs
@@ -42,7 +43,7 @@ def application_build(app, event):
     pass
 
 
-app = App(dirname(__file__))  # Init our app and set base constants
+app = App(os.path.dirname(__file__))  # Init our app and set base constants
 app.NAME = 'application_name'
 app.DESCRIPTION = 'Application description'
 app.URL = ''
@@ -56,12 +57,10 @@ app.register('component', 'my_application', MyApplication)
 # Register some event handlers
 app.dispatch('application_build', application_build)
 
-# Build our app. 
-# As a parameter of the build method, you need to specify the name of the component that will process the logic of
-# your application.
-my_application: MyApplication = app.build('my_application')
-# Now you can call the methods of your application to process it, if necessary. 
-my_application.start()
+# Build and start our app. 
+# As the first parameter of the application start method, you need to specify the name of the component that will process the logic of
+# your application. Next parameters is optional and need to starting up your app.
+app.start('my_application', sys.argv)
 ```
 
 ### Dependencies
