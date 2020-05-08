@@ -8,7 +8,7 @@ with open('README.md', 'r') as detailed_description:
 
 setup(
     name='soigne',
-    version='0.1.8b5',
+    version='0.1.8b6',
     url='https://github.com/jm-organization/soigne',
     license='GPL-3.0',
     author='gromovjm',
